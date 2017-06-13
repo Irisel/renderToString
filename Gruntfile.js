@@ -1,4 +1,5 @@
 var webpack = require('webpack')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = function (grunt) {
   grunt.initConfig({
@@ -40,14 +41,12 @@ module.exports = function (grunt) {
 
     sass: {
       options: {
-        banner: '<%= banner %>',
-        sourceMap: false,
         style: 'expanded',
         unixNewlines: true
       },
       dist: {
         files: {
-          '<%= meta.entryPath %>css/app.css': '<%= meta.srcPath%>src/sass/app.scss'
+          '<%= meta.entryPath %>css/app.css': '<%= meta.srcPath %>sass/app.scss'
         }
       }
     },
@@ -82,16 +81,16 @@ module.exports = function (grunt) {
               loader: 'style-loader!css-loader?minimize!sass-loader'
             },
             {
+              test: /\.css$/,
+              loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]')
+            },
+            {
               test: /\.js$/,
               loader: 'babel-loader'
             },
             {
               test: /\.jsx$/,
               loader: 'babel-loader!jsx-loader?harmony'
-            },
-            {
-              test: /\.css$/,
-              loader: 'style-loader!css-loader'
             }
           ]
         },
@@ -102,9 +101,10 @@ module.exports = function (grunt) {
           reasons: true
         },
         plugins: [
-          // new webpack.DefinePlugin({__DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))}),
-          // new webpack.DefinePlugin({__DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))}),
-          // new webpack.EnvironmentPlugin(['NODE_ENV'])
+          new ExtractTextPlugin('../css/style.css', {
+              allChunks: true
+          }),
+          new webpack.NoErrorsPlugin()
         ],
         storeStatsTo: 'xyz', // writes the status to a variable named xyz
         progress: false, // Don't show progress
@@ -128,16 +128,16 @@ module.exports = function (grunt) {
               loader: 'style-loader!css-loader?minimize!sass-loader'
             },
             {
+              test: /\.css$/,
+              loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]')
+            },
+            {
               test: /\.js$/,
               loader: 'babel-loader'
             },
             {
               test: /\.jsx$/,
               loader: 'babel-loader!jsx-loader?harmony'
-            },
-            {
-              test: /\.css$/,
-              loader: 'style-loader!css-loader'
             }
           ]
         },
@@ -148,9 +148,10 @@ module.exports = function (grunt) {
           reasons: true
         },
         plugins: [
-          // new webpack.DefinePlugin({__DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))}),
-          // new webpack.DefinePlugin({__DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))}),
-          // new webpack.EnvironmentPlugin(['NODE_ENV'])
+          new ExtractTextPlugin('../css/style.css', {
+              allChunks: true
+          }),
+          new webpack.NoErrorsPlugin()
         ],
         storeStatsTo: 'xyz', // writes the status to a variable named xyz
         progress: false, // Don't show progress
@@ -173,11 +174,10 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt, { scope: 'devDependencies' })
   require('time-grunt')(grunt)
-
+  grunt.loadNpmTasks('grunt-contrib-sass')
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-webpack')
-  grunt.registerTask('default', ['sass', 'cssmin', 'webpack:server', 'webpack:app'])
-  grunt.registerTask('css', ['sass', 'cssmin'])
+  grunt.registerTask('default', ['sass', 'webpack:server', 'webpack:app', 'cssmin', 'uglify'])
   grunt.registerTask('webpack-hotel', ['webpack:hotel', 'uglify'])
 }

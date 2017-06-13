@@ -18,11 +18,11 @@ app.set('view engine', 'html')
 
 var index = require('./routes/index')
 
-var page = require("./public/src/js/page");
+// var page = require("./public/src/js/page");
 
-app.get('/server', function (req, res) {
-  res.end(page())
-})
+// app.get('/server', function (req, res) {
+//   res.end(page())
+// })
 
 app.get('/app', function (req, res) {
   index.getApp(function(data){
